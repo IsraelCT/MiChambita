@@ -1,6 +1,7 @@
 package com.example.michambita.views.login
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -15,14 +16,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.michambita.viewModels.LoginViewModel
-
+/*
 @Composable
 fun TabsView(navController: NavHostController, loginVM: LoginViewModel) {
     var selectedTab by remember { mutableStateOf(0) }
-    var tabs = listOf("Iniciar sesión", "Registrarse")
-    Column(modifier = Modifier.padding(vertical = 16.dp)) {
+    val tabs = listOf("Iniciar sesión", "Registrarse")
+    Column {
         TabRow(
             selectedTabIndex = selectedTab,
             contentColor = Color.Black,
@@ -47,3 +49,53 @@ fun TabsView(navController: NavHostController, loginVM: LoginViewModel) {
     }
 }
 
+
+
+ */
+
+
+@Composable
+fun TabsView(navController: NavController, loginVM: LoginViewModel) {
+
+    var selectedTab by remember { mutableStateOf(0) }
+    val tabs = listOf("Iniciar Sesion", "Registrarse")
+
+    Column(Modifier.padding(16.dp)) {
+        TabRow(
+            selectedTabIndex = selectedTab,
+            contentColor = Color.Black,
+            indicator = { tabPosition ->
+                TabRowDefaults.Indicator(
+                    Modifier.tabIndicatorOffset(tabPosition[selectedTab])
+                )
+            }
+        )
+        {
+            tabs.forEachIndexed { index, title ->
+                Tab(
+                    selected = selectedTab == index,
+                    onClick = { selectedTab = index },
+                    text = { Text(text = title) }
+                )
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        when (selectedTab) {
+            0 -> LoginView(navController, loginVM)
+            1 -> RegisterView(navController, loginVM)
+        }
+    }
+}

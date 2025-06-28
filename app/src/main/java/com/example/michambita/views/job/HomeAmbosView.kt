@@ -6,8 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 
 @Composable
-fun HomeView(navController: NavController){
+fun HomeAmbosView(navController: NavController){
     Column {
-        Text("Comenzamos")
+        Text(text = "Bienvenido trabajador y cliente")
     }
 }

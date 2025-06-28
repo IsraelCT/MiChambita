@@ -1,17 +1,28 @@
 package com.example.michambita.views.login
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+
 import androidx.compose.material3.ExperimentalMaterial3Api
+
 import androidx.compose.material3.OutlinedTextField
+
 import androidx.compose.material3.Text
+
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,18 +34,31 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.michambita.components.Alert
+import com.example.michambita.components.LoginFeedBack
+import com.example.michambita.components.RolDropdown
+import com.example.michambita.model.RolUsuario
+import com.example.michambita.navigation.NavUser
 import com.example.michambita.viewModels.LoginViewModel
+import java.nio.file.WatchEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterView(navController: NavController, loginVM: LoginViewModel) {
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
+    var rolSeleccionado by remember { mutableStateOf(RolUsuario.Cliente) }
+    val estado by loginVM.estado.collectAsState()
+
+
+
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
+        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxSize().verticalScroll(rememberScrollState())
+            .padding(16.dp)
     ) {
-        var email by remember { mutableStateOf("") }
-        var password by remember { mutableStateOf("") }
-        var username by remember { mutableStateOf("") }
+
 
         OutlinedTextField(
             value = username,
@@ -44,6 +68,7 @@ fun RegisterView(navController: NavController, loginVM: LoginViewModel) {
                 .fillMaxWidth()
                 .padding(start = 30.dp, end = 30.dp)
         )
+
 
         OutlinedTextField(
             value = email,
@@ -66,13 +91,26 @@ fun RegisterView(navController: NavController, loginVM: LoginViewModel) {
                 .padding(start = 30.dp, end = 30.dp)
         )
 
+
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            RolDropdown(
+                rolSeleccionado = rolSeleccionado,
+                onRolSeleccionado = { rolSeleccionado = it })
+
+        }
+
         Spacer(modifier = Modifier.height(20.dp))
 
         Button(
             onClick = {
-                loginVM.createUser(email,password,username){
-                    navController.navigate("Home")
+                if (email.isNotBlank() && password.isNotBlank() && username.isNotBlank()) {
+                    loginVM.RegisterUser(email, password, username, rolSeleccionado)
                 }
+
             }, modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 30.dp, end = 30.dp)
@@ -80,14 +118,22 @@ fun RegisterView(navController: NavController, loginVM: LoginViewModel) {
             Text(text = "Registrarse")
         }
 
+
+
+
+
         if (loginVM.showAlert) {
-            Alert(title = "Alerta",
+            Alert(
+                title = "Alerta",
                 message = "Usuario no creado",
                 confirmText = "Aceptar",
                 onConfirmClick = { loginVM.closeAlert() }) {
             }
         }
 
+        LaunchedEffect(estado) {
+            NavUser(estado, navController)
+        }
 
     }
 }

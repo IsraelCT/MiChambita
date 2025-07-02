@@ -9,53 +9,48 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.example.michambita.model.RolUsuario
+import com.example.michambita.model.toEstadoExito
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.tasks.await
 
 
 @Composable
 fun BlankView(navController: NavController) {
-
     LaunchedEffect(Unit) {
         val usuario = FirebaseAuth.getInstance().currentUser
+
         if (usuario != null) {
-            val uid = usuario.uid
-            Firebase.firestore.collection("Users").document(uid).get()
-                .addOnSuccessListener { document ->
-                    val rol = try {
-                        val rolString = document.getString("rol") ?: "Cliente"
-                        RolUsuario.valueOf(rolString)
-                    } catch (e: Exception) {
-                        RolUsuario.Cliente
-                    }
-                    when (rol) {
-                        RolUsuario.Cliente -> navController.navigate("HomeCliente") { popUpTo(0) }
-                        RolUsuario.Trabajador -> navController.navigate("HomeTrabajador") {
-                            popUpTo(
-                                0
-                            )
-                        }
+            try {
+                val uid = usuario.uid
+                val documento = Firebase.firestore
+                    .collection("Users")
+                    .document(uid)
+                    .get()
+                    .await()
 
-                        RolUsuario.Ambos -> navController.navigate("HomeAmbos") { popUpTo(0) }
-
-                    }
-
-
-
-                }.addOnFailureListener {
-                    navController.navigate("Login"){popUpTo(0)}
+                val rol = try {
+                    val rolString = documento.getString("rol") ?: "Cliente"
+                    RolUsuario.valueOf(rolString)
+                } catch (e: Exception) {
+                    RolUsuario.Cliente
                 }
 
-            }
-        else{
-            navController.navigate("login"){popUpTo(0)}
-        }
-        }
+                rol.toEstadoExito()
 
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-        CircularProgressIndicator()
+            } catch (e: Exception) {
+                navController.navigate("Login") { popUpTo(0) }
+            }
+        } else {
+            navController.navigate("Login") { popUpTo(0) }
         }
     }
 
-
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+    }
+}

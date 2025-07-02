@@ -71,6 +71,9 @@ fun LoginView(navController: NavController, loginVM: LoginViewModel) {
                 if (email.isNotBlank() && password.isNotBlank()) {
                     loginVM.login(email, password)
                 }
+                else{
+                    loginVM.activarAlerta()
+                }
 
             }, modifier = Modifier
                 .fillMaxWidth()

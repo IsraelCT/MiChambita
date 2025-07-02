@@ -20,7 +20,9 @@ import com.example.michambita.ui.theme.MiChambitaTheme
 import com.example.michambita.viewModels.LoginViewModel
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
+import dagger.hilt.android.AndroidEntryPoint
 
+    @AndroidEntryPoint
     class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

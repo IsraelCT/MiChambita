@@ -22,6 +22,7 @@ data class UserModel(
   */
 
 
+
 enum class RolUsuario {
     Cliente,
     Trabajador,

@@ -109,6 +109,7 @@ fun RegisterView(navController: NavController, loginVM: LoginViewModel) {
             onClick = {
                 if (email.isNotBlank() && password.isNotBlank() && username.isNotBlank()) {
                     loginVM.RegisterUser(email, password, username, rolSeleccionado)
+                    //Aqui estamos registrando los datos del usuario
                 }
 
             }, modifier = Modifier
@@ -132,6 +133,7 @@ fun RegisterView(navController: NavController, loginVM: LoginViewModel) {
         }
 
         LaunchedEffect(estado) {
+            //Este estado cambia cuando el usuario selecciona el rol deseado.Si es cliente le va a mandar a un view de cliente
             NavUser(estado, navController)
         }
 

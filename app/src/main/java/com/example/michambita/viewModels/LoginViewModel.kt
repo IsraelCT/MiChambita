@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.michambita.model.EstadoLogin
 import com.example.michambita.model.RolUsuario
 import com.example.michambita.model.UserModel
+import com.example.michambita.model.toEstadoExito
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -25,7 +26,7 @@ import kotlin.jvm.Throws
 
 class LoginViewModel : ViewModel() {
 
-    private val auth: FirebaseAuth = Firebase.auth
+
     var showAlert by mutableStateOf(false)
     private val _estado = MutableStateFlow<EstadoLogin>(EstadoLogin.Idle)
     val estado: StateFlow<EstadoLogin> = _estado
@@ -46,44 +47,13 @@ class LoginViewModel : ViewModel() {
                 catch (e : Exception){
                     RolUsuario.Cliente
                 }
-                _estado.value =when(rol){
-                    RolUsuario.Cliente -> EstadoLogin.exitoCliente
-                    RolUsuario.Trabajador -> EstadoLogin.exitoTrabajador
-                    RolUsuario.Ambos -> EstadoLogin.exitoAmbos
-                }
+                _estado.value = rol.toEstadoExito()
              /*
-                auth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            val uid = auth.currentUser?.uid
-                            if (uid != null) {
-                                Firebase.firestore.collection("Users").document(uid).get()
-                                    .addOnSuccessListener { doc ->
-                                        val rolString = doc.getString("rol") ?: "Cliente"
-                                        val rol = try {
-                                            RolUsuario.valueOf(rolString)
-                                        } catch (e: IllegalStateException) {
-                                            RolUsuario.Cliente
-                                        }
-                                        onSuccess(rol)
-                                    }
-
-
-                            } else {
-                                Log.d("FIREBASE", "Login fallido")
-                                showAlert = true
-
-                            }
-                        } else {
-                            Log.d("ERROR EN FIREBASE", "Usuario y contrasena incorrectos")
-                            showAlert = true
-                        }
-                    }
 
               */
             } catch (e: java.lang.Exception) {
                 _estado.value = EstadoLogin.Error("Error de inicio de sesion  : ${e.localizedMessage ?: "desconocido"}")
-               // Log.d("ERROR EN JETPACK", "ERROR: ${e.localizedMessage}")
+
             }
         }
     }
@@ -98,60 +68,22 @@ class LoginViewModel : ViewModel() {
                 val uid = authResult.user?.uid ?: throw Exception("UID nulo")
                     val nuevoUsuario = UserModel(uid,username,email,rol)
                 Firebase.firestore.collection("Users").document(uid).set(nuevoUsuario).await()
-                    _estado.value =when(rol){
-                        RolUsuario.Cliente -> EstadoLogin.exitoCliente
-                        RolUsuario.Trabajador -> EstadoLogin.exitoTrabajador
-                        RolUsuario.Ambos -> EstadoLogin.exitoAmbos
-                    }
-                     /*   .addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                saveUser(username)
-                                onSuccess()
-                            } else {
-                                Log.d("ERROR EN FIREBASE", "Error al crear usuario")
-                                showAlert = true
-                            }
-                        }
+                    _estado.value =rol.toEstadoExito()
 
-
-                      */
             } catch (e: Exception) {
                 _estado.value = EstadoLogin.Error("Error : ${e.localizedMessage ?: "desconocido"}")
-                //Log.d("ERROR EN JETPACK", "ERROR: ${e.localizedMessage}")
+
             }
         }
     }
 
-        /*
-    private fun saveUser(username: String) {
-        val id = auth.currentUser?.uid
-        val email = auth.currentUser?.email
 
-        viewModelScope.launch(Dispatchers.IO) {
-            val user = UserModel(
-                userId = id.toString(),
-                email = email.toString(),
-                username = username,
-                rol = RolUsuario.Trabajador
-            )
-
-            FirebaseFirestore.getInstance().collection("Users")
-                .add(user)
-                .addOnSuccessListener {
-                    Log.d("GUARDO", "Guardo correctamente")
-                }.addOnFailureListener {
-                    Log.d("ERROR AL GUARDAR", "ERROR al guardar en firestore")
-                }
-        }
-
-
-    }
-
-
-         */
 
     fun closeAlert() {
         showAlert = false
+    }
+    fun activarAlerta(){
+        showAlert = true
     }
 }
 

@@ -5,6 +5,9 @@ plugins {
     id("com.google.gms.google-services")
     id ("kotlin-kapt")
     id ("com.google.dagger.hilt.android")
+    id("dagger.hilt.android.plugin")
+
+
 }
 
 android {
@@ -51,6 +54,9 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4")
 
+    //Localizacion
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
 
     var nav_version = "2.9.0"
 
@@ -64,6 +70,7 @@ dependencies {
 
     implementation("com.google.dagger:hilt-android:2.51.1")
     kapt("com.google.dagger:hilt-android-compiler:2.51.1")
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
 
     // Retrofit

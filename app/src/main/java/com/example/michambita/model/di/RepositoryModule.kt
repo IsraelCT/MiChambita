@@ -1,4 +1,4 @@
-package com.example.michambita.di
+package com.example.michambita.model.di
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -13,8 +13,6 @@ import dagger.hilt.android.components.ViewModelComponent
 @InstallIn(ViewModelComponent::class)
 object RepositoryModule {
 
-    @Provides
-    fun provideFirebaseFirestore(): FirebaseFirestore = Firebase.firestore
 
     @Provides
     fun provideTrabajadorRepository(

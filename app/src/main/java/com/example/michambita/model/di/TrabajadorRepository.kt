@@ -1,4 +1,4 @@
-package com.example.michambita.di
+package com.example.michambita.model.di
 
 import android.location.Location
 import com.example.michambita.model.app.TrabajadorModel

@@ -1,4 +1,4 @@
-package com.example.michambita.di.data
+package com.example.michambita.model.di.data
 
 import android.app.Application
 

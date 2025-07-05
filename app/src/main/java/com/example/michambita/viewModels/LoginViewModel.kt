@@ -9,6 +9,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.michambita.model.EstadoLogin
 import com.example.michambita.model.RolUsuario
 import com.example.michambita.model.UserModel
+import com.example.michambita.model.domain.useCase.LoginUseCase
+import com.example.michambita.model.domain.useCase.RegisterUserUseCase
 import com.example.michambita.model.toEstadoExito
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -16,14 +18,54 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.auth.User
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.lang.Exception
+import javax.inject.Inject
 import kotlin.jvm.Throws
 
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val loginUseCase: LoginUseCase,
+    private val registerUserUseCase: RegisterUserUseCase
+) : ViewModel() {
+
+    var showAlert by mutableStateOf(false)
+    private val _estado = MutableStateFlow<EstadoLogin>(EstadoLogin.Idle)
+    val estado: StateFlow<EstadoLogin> = _estado
+
+    fun login(email: String, password: String) {
+        viewModelScope.launch {
+            _estado.value = EstadoLogin.cargando
+            val result = loginUseCase(email, password)
+
+            _estado.value = result.fold(
+                onSuccess = { it.toEstadoExito() },
+                onFailure = { EstadoLogin.Error(it.localizedMessage ?: "Error desconocido") }
+            )
+        }
+    }
+
+    fun registerUser(email: String, password: String, username: String, rol: RolUsuario) {
+        viewModelScope.launch {
+            _estado.value = EstadoLogin.cargando
+            val result = registerUserUseCase(email, password, username, rol)
+
+            _estado.value = result.fold(
+                onSuccess = { it.toEstadoExito() },
+                onFailure = { EstadoLogin.Error(it.localizedMessage ?: "Error desconocido") }
+            )
+        }
+    }
+
+    fun closeAlert() { showAlert = false }
+    fun activarAlerta() { showAlert = true }
+}
+/*
 class LoginViewModel : ViewModel() {
 
 
@@ -87,3 +129,6 @@ class LoginViewModel : ViewModel() {
     }
 }
 
+
+
+ */

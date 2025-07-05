@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.michambita.components.Alert
 import com.example.michambita.components.LoginFeedBack
@@ -43,7 +44,7 @@ import java.nio.file.WatchEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterView(navController: NavController, loginVM: LoginViewModel) {
+fun RegisterView(navController: NavController, loginVM: LoginViewModel = hiltViewModel()) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
@@ -108,7 +109,7 @@ fun RegisterView(navController: NavController, loginVM: LoginViewModel) {
         Button(
             onClick = {
                 if (email.isNotBlank() && password.isNotBlank() && username.isNotBlank()) {
-                    loginVM.RegisterUser(email, password, username, rolSeleccionado)
+                    loginVM.registerUser(email, password, username, rolSeleccionado)
                     //Aqui estamos registrando los datos del usuario
                 }
 
